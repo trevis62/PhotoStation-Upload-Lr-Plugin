@@ -53,17 +53,17 @@ local function updatePluginStatus( propertyTable )
 		-- Use a repeat loop to allow easy way to "break" out.
 		-- (It only goes through once.)
 
-		if PSDialogs.validateProgram(nil, propertyTable.convertprog) then
+		if not PSDialogs.validateProgram(nil, propertyTable.convertprog) then
 			message = LOC "$$$/PSUpload/Dialogs/Messages/ConvertPathMissing=Incorrect convert path."
 			break
 		end
 
-		if PSDialogs.validateProgram(nil, propertyTable.dcrawprog) then
+		if not PSDialogs.validateProgram(nil, propertyTable.dcrawprog) then
 			message = LOC "$$$/PSUpload/Dialogs/Messages/DcrawPathMissing=Incorrect dcraw path."
 			break
 		end
 
-		if PSDialogs.validateProgram(nil, propertyTable.exiftoolprog) then
+		if not PSDialogs.validateProgram(nil, propertyTable.exiftoolprog) then
 			message = LOC "$$$/PSUpload/Dialogs/Messages/ExifToolPathMissing=Incorrect exiftool path."
 			break
 		end
