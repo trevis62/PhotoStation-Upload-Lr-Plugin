@@ -1162,17 +1162,30 @@ function Photos.deleteEmptyAlbumAndParents(h, folderPath)
 
 	currentFolderPath = folderPath
 	while currentFolderPath do
-		local photoInfos =  Photos_listFolderItems(h, currentFolderPath)
-		local subfolders =  Photos_listFolderSubfolders(h, currentFolderPath)
+		local photoInfos, itemsErrorCode 		= Photos_listFolderItems(h, currentFolderPath)
+		local subfolders, subfoldersErrorCode 	= Photos_listFolderSubfolders(h, currentFolderPath)
+
+		if not photoInfos or not subfolders then
+			-- we could not get the folder contents, so we do not know whether it is empty
+			local errorCode = iif(photoInfos, subfoldersErrorCode, itemsErrorCode)
+
+			if errorCode == 1 then
+				-- folder does not exist: nothing to delete here, but its parents may still be empty
+				writeLogfile(3, string.format('deleteEmptyAlbumAndParents(%s) - does not exist.\n', currentFolderPath))
+			else
+				-- any other error: never delete a folder we could not check
+				writeLogfile(1, string.format('deleteEmptyAlbumAndParents(%s) - cannot list folder (%s): not deleted!\n',
+												currentFolderPath, Photos.getErrorMsg(errorCode)))
+				return nDeletedFolders
+			end
 
     	-- if not empty, we are ready
-    	if 		(photoInfos and #photoInfos > 0)
-    		or 	(subfolders	and	#subfolders > 0)
-    	then
+		elseif #photoInfos > 0 or #subfolders > 0 then
    			writeLogfile(3, string.format('deleteEmptyAlbumAndParents(%s) - was not empty: not deleted.\n', currentFolderPath))
     		return nDeletedFolders
 		elseif not Photos_deleteFolder (h, currentFolderPath) then
 			writeLogfile(2, string.format('deleteEmptyAlbumAndParents(%s) - was empty: delete failed!\n', currentFolderPath))
+			return nDeletedFolders
 		else
 			writeLogfile(2, string.format('deleteEmptyAlbumAndParents(%s) - was empty: deleted.\n', currentFolderPath))
 			nDeletedFolders = nDeletedFolders + 1
