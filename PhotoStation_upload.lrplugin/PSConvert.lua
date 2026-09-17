@@ -184,26 +184,32 @@ PSConvert.downloadUrlIMConvert			= 'https://imagemagick.org/script/download.php'
 PSConvert.defaultInstallPathIMConvert 	= iif(WIN_ENV,
     										'C:/Program Files/ImageMagick-7.1.0-Q16-HDRI/magick.exe',
     										findFirstExistingPath({
-    											'/opt/homebrew/bin/convert',	-- Homebrew on Apple Silicon
-    											'/usr/local/bin/convert',		-- Homebrew on Intel
-    											'/opt/homebrew/bin/magick',		-- ImageMagick 7 w/o convert compat link
+    											'/opt/homebrew/opt/imagemagick/bin/magick',	-- Homebrew on Apple Silicon
+    											'/usr/local/opt/imagemagick/bin/magick',	-- Homebrew on Intel
+    											'/opt/homebrew/bin/magick',					-- symlinked variants, see note above
     											'/usr/local/bin/magick',
+    											'/opt/homebrew/bin/convert',				-- ImageMagick 6
+    											'/usr/local/bin/convert',
     										}))
 
 PSConvert.downloadUrlDcraw				= 'http://www.dechifro.org/dcraw/'
 PSConvert.defaultInstallPathDcraw 		= iif(WIN_ENV,
     										'C:/Program Files/ImageMagick-7.1.0-Q16-HDRI/dcraw.exe',
     										findFirstExistingPath({
-    											'/opt/homebrew/bin/dcraw',		-- Homebrew on Apple Silicon
-    											'/usr/local/bin/dcraw',			-- Homebrew on Intel
+    											'/opt/homebrew/opt/dcraw/bin/dcraw',	-- Homebrew on Apple Silicon
+    											'/usr/local/opt/dcraw/bin/dcraw',		-- Homebrew on Intel
+    											'/opt/homebrew/bin/dcraw',				-- symlinked variants, see note above
+    											'/usr/local/bin/dcraw',
     										}))
 
 PSConvert.downloadUrlFfmpeg				= 'https://ffmpeg.org/download.html'
 PSConvert.defaultInstallPathFfmpeg 		= iif(WIN_ENV,
     										'C:/Windows/ffmpeg.exe',
     										findFirstExistingPath({
-    											'/opt/homebrew/bin/ffmpeg',		-- Homebrew on Apple Silicon
-    											'/usr/local/bin/ffmpeg',		-- Homebrew on Intel
+    											'/opt/homebrew/opt/ffmpeg/bin/ffmpeg',	-- Homebrew on Apple Silicon
+    											'/usr/local/opt/ffmpeg/bin/ffmpeg',		-- Homebrew on Intel
+    											'/opt/homebrew/bin/ffmpeg',				-- symlinked variants, see note above
+    											'/usr/local/bin/ffmpeg',
     										}))
 
 PSConvert.defaultVideoPresetsFn = "PSVideoConversions.json"

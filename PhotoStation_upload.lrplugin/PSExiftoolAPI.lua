@@ -51,8 +51,10 @@ PSExiftoolAPI.downloadUrl = 'http://www.sno.phy.queensu.ca/~phil/exiftool/'
 PSExiftoolAPI.defaultInstallPath = iif(WIN_ENV,
 								'C:/Windows/exiftool.exe',
 								findFirstExistingPath({
-									'/opt/homebrew/bin/exiftool',	-- Homebrew on Apple Silicon
-									'/usr/local/bin/exiftool',		-- Homebrew on Intel, ExifTool .pkg installer
+									'/opt/homebrew/opt/exiftool/bin/exiftool',	-- Homebrew on Apple Silicon
+									'/usr/local/opt/exiftool/bin/exiftool',		-- Homebrew on Intel
+									'/usr/local/bin/exiftool',					-- ExifTool .pkg installer (real file)
+									'/opt/homebrew/bin/exiftool',				-- symlink, see note in PSUtilities
 								}))
 
 --========================= locals =================================================================================

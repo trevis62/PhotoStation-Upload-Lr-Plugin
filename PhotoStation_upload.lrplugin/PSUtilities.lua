@@ -628,6 +628,12 @@ end
 -- Used to derive default install paths of the helper programs, whose location
 -- depends on the platform and the package manager used, e.g.
 -- '/opt/homebrew/bin' (Homebrew on Apple Silicon) vs. '/usr/local/bin' (Homebrew on Intel)
+--
+-- Note for MacOS: as stated in the README, the tool paths must not be symbolic
+-- links. Homebrew's '<prefix>/bin/<tool>' entries are symlinks into a versioned
+-- Cellar directory, so the candidate lists prefer '<prefix>/opt/<formula>/bin/<tool>',
+-- where the final path component is the real executable and no version is part of
+-- the path, i.e. it survives a 'brew upgrade'.
 function findFirstExistingPath(pathList)
 	for i = 1, #pathList do
 		if LrFileUtils.exists(pathList[i]) == 'file' then
