@@ -261,7 +261,7 @@ function PSConvert.convertPicConcurrent(h, srcFilename, srcPhoto, exportFormat, 
 
 		local cmdline = cmdlineQuote() .. '"' ..
 							h.dcraw .. '" ' .. rawConvParams .. '-O "'  .. srcJpgFilename .. '" "'.. srcFilename ..
-							'" 2>> "' .. iif(getLogLevel() >= 4, getLogFilename(), getNullFilename()) .. '"'
+							'" 2>> "' .. iif(getLogLevel() >= 4, getLogFilename(), getNullFilename()) .. '"' ..
 						cmdlineQuote()
 		writeLogfile(3, cmdline .. "\n")
 
@@ -285,7 +285,7 @@ function PSConvert.convertPicConcurrent(h, srcFilename, srcPhoto, exportFormat, 
 						 '( +clone   -define jpeg:size=' ..  mSize .. ' -thumbnail '  ..  mSize .. ' ' .. convParams .. ' -write "' ..  mFile .. '" +delete ) ' ..
 								    '-define jpeg:size=' ..  sSize .. ' -thumbnail '  ..  sSize .. ' ' .. convParams .. ' "' 	   ..  sFile .. '"'
 			) ..
-			' 2>> "' .. iif(getLogLevel() >= 4, getLogFilename(), getNullFilename()) .. '"'
+			' 2>> "' .. iif(getLogLevel() >= 4, getLogFilename(), getNullFilename()) .. '"' ..
 		cmdlineQuote()
 
 	writeLogfile(3, cmdline .. "\n")
