@@ -291,8 +291,8 @@ function getTableExtract(inputTable, tableField, filterAttr, filterPatternList)
     if not inputTable then return {} end
 
 	local j, tableExtract = 1, {}
-    local patternMatched = false
 	for i = 1, #inputTable do
+		local patternMatched = false
 		if not filterAttr then
             patternMatched = true
         else
