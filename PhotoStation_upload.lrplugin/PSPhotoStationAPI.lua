@@ -652,10 +652,14 @@ function PhotoStation.deletePhoto (h, dstFilename, isVideo)
 
 	local respArray, errorCode = PhotoStation.callSynoAPI (h, 'SYNO.PhotoStation.Photo', formData)
 
-	if not respArray and errorCode ~= 101 then return false, errorCode end
+	if not respArray then
+		-- errorCode 101: no such directory (PS 6.6), i.e. nothing to delete
+		if errorCode ~= 101 then return false, errorCode end
+		writeLogfile(3, string.format('deletePhoto(%s): does not exist, returns OK\n', dstFilename))
+		return true
+	end
 
-	writeLogfile(3, string.format('deletePhoto(%s) returns OK (errorCode was %d)\n', dstFilename, ifnil(errorCode, 0)))
----@diagnostic disable-next-line: need-check-nil
+	writeLogfile(3, string.format('deletePhoto(%s) returns OK\n', dstFilename))
 	return respArray.success
 end
 
@@ -1142,18 +1146,20 @@ upload a single file to Photo Station
 		LAST	- the original file must always be the last
 	The files belonging to one batch must be send in the right chronological order and tagged accordingly
 ]]
+-- the photo of the currently running upload batch: each export/publish task gets its own copy
+local lastPhoto
+
 function PhotoStation.uploadPictureFile(h, srcFilename, srcDateTime, dstDir, dstFilename, picType, mimeType, position)
 	local seqOption
 	local datetimeOption
 	local retcode,reason
 
 	local thisPhoto = dstDir .. '/' .. dstFilename
-	local lastPhoto
-	
+
 	if thisPhoto ~= lastPhoto then
 		if position ~= 'FIRST' then
 			writeLogfile(1, string.format("uploadPictureFile(%s) to (%s - %s - %s) interrupts upload of %s\n",
-										PSLrUtilities.leafName(srcFilename), thisPhoto, position, picType, lastPhoto))
+										PSLrUtilities.leafName(srcFilename), thisPhoto, position, picType, ifnil(lastPhoto, '<none>')))
 		end
 		lastPhoto = thisPhoto
 	end

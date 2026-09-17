@@ -560,7 +560,9 @@ function PSConvert.ffmpegGetAdditionalInfo(h, srcPhoto, renderedVideoFilename, e
 	--	'rotate          : 270'		-->	'displaymatrix: rotation of 90.00 degrees'
 	vinfo.rotation = '0'
 	for v in string.gmatch(ffmpegReport, "displaymatrix:%s+rotation%s+of%s+(-*[%d]+)") do
-		vinfo.rotation = iif(v == "-180", 180, iif(v == 0, 0, v + 180))
+		-- v is a capture, so compare numerically: '-0' (unrotated) must not fall through to v + 180
+		local displayMatrixRotation = tonumber(v)
+		vinfo.rotation = iif(displayMatrixRotation == -180, 180, iif(displayMatrixRotation == 0, 0, displayMatrixRotation + 180))
 		writeLogfile(4, string.format("\trotation: %s (displaymatrix rotation: %s)\n", vinfo.rotation, v))
 	end
 
