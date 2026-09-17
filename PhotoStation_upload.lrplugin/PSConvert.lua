@@ -183,17 +183,28 @@ PSConvert_mt = { __index = PSConvert }
 PSConvert.downloadUrlIMConvert			= 'https://imagemagick.org/script/download.php'
 PSConvert.defaultInstallPathIMConvert 	= iif(WIN_ENV,
     										'C:/Program Files/ImageMagick-7.1.0-Q16-HDRI/magick.exe',
-    										'/usr/local/bin/convert')
+    										findFirstExistingPath({
+    											'/opt/homebrew/bin/convert',	-- Homebrew on Apple Silicon
+    											'/usr/local/bin/convert',		-- Homebrew on Intel
+    											'/opt/homebrew/bin/magick',		-- ImageMagick 7 w/o convert compat link
+    											'/usr/local/bin/magick',
+    										}))
 
 PSConvert.downloadUrlDcraw				= 'http://www.dechifro.org/dcraw/'
 PSConvert.defaultInstallPathDcraw 		= iif(WIN_ENV,
     										'C:/Program Files/ImageMagick-7.1.0-Q16-HDRI/dcraw.exe',
-    										'/usr/local/bin/dcraw')
+    										findFirstExistingPath({
+    											'/opt/homebrew/bin/dcraw',		-- Homebrew on Apple Silicon
+    											'/usr/local/bin/dcraw',			-- Homebrew on Intel
+    										}))
 
 PSConvert.downloadUrlFfmpeg				= 'https://ffmpeg.org/download.html'
 PSConvert.defaultInstallPathFfmpeg 		= iif(WIN_ENV,
     										'C:/Windows/ffmpeg.exe',
-    										'/usr/local/bin/ffmpeg')
+    										findFirstExistingPath({
+    											'/opt/homebrew/bin/ffmpeg',		-- Homebrew on Apple Silicon
+    											'/usr/local/bin/ffmpeg',		-- Homebrew on Intel
+    										}))
 
 PSConvert.defaultVideoPresetsFn = "PSVideoConversions.json"
 PSConvert.convOptions			= nil

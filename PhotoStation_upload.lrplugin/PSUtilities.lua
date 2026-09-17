@@ -26,6 +26,7 @@ exported functions:
 
 	- getNullFilename
 	- getProgExt
+	- findFirstExistingPath
 
 	- openLogfile
 	- writeLogfile
@@ -618,6 +619,26 @@ function getProgExt()
 	else
 		return ''
 	end
+end
+
+---------------------------------------------------------------------------------------
+-- findFirstExistingPath(pathList)
+-- returns the first path in pathList that points to an existing file,
+-- or the first entry of the list, if none of them exists.
+-- Used to derive default install paths of the helper programs, whose location
+-- depends on the platform and the package manager used, e.g.
+-- '/opt/homebrew/bin' (Homebrew on Apple Silicon) vs. '/usr/local/bin' (Homebrew on Intel)
+function findFirstExistingPath(pathList)
+	for i = 1, #pathList do
+		if LrFileUtils.exists(pathList[i]) == 'file' then
+			writeLogfile(4, string.format("findFirstExistingPath: found '%s'\n", pathList[i]))
+			return pathList[i]
+		end
+	end
+
+	writeLogfile(3, string.format("findFirstExistingPath: none of '%s' exists, defaulting to '%s'\n",
+									table.concat(pathList, "', '"), pathList[1]))
+	return pathList[1]
 end
 
 ---------------------- filename/dirname sanitizing routines ---------------------------------------------------------
