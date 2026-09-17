@@ -1681,19 +1681,29 @@ end
 -- 	returns three URLsfor the given album
 function PhotoStation.getSharedAlbumUrls(h, publishSettings, sharedAlbumName)
     writeLogfile(4, string.format("PhotoStation.getSharedAlbumUrls('%s') ...\n", sharedAlbumName))
-	local albumId, albumInfo = PhotoStation_getSharedAlbumInfo(h,  sharedAlbumName, true)
+	-- PhotoStation_getSharedAlbumInfo() returns the album info only, the id is part of it
+	local albumInfo = PhotoStation_getSharedAlbumInfo(h,  sharedAlbumName, true)
 	local privateUrl, publicUrl, publicUrl2 = '', '', ''
-	
-	if  not (albumId and albumInfo) then
+
+	if  not albumInfo then
 		writeLogfile(4, string.format("PhotoStation.getSharedAlbumUrls('%s') found no albumInfo\n", sharedAlbumName))
 		return nil, nil, nil
 	end
-	
-	privateUrl 	= publishSettings.proto  .. "://" .. publishSettings.servername  .. publishSettings.psPath .. "#!SharedAlbums/" .. albumId
-	if albumInfo.public_share_url then
-		local publicSharePath = string.match(albumInfo.public_share_url, 'http[s]*://[^/]*(.*)')
+
+	privateUrl 	= publishSettings.proto  .. "://" .. publishSettings.servername  .. publishSettings.psPath .. "#!SharedAlbums/" .. albumInfo.id
+
+	-- the public share of a Shared Album is reported as additional info, as in isSharedAlbumPublic()
+	local publicShare 		= albumInfo.additional and albumInfo.additional.public_share
+	local publicShareUrl	= (publicShare and publicShare.public_share_url) or albumInfo.public_share_url
+	local publicSharePath 	= publicShareUrl and string.match(publicShareUrl, 'http[s]*://[^/]*(.*)')
+
+	if publicSharePath then
 		publicUrl 		= publishSettings.proto  .. "://" .. publishSettings.servername  .. publicSharePath
-		publicUrl2 		= publishSettings.proto2 .. "://" .. publishSettings.servername2 .. publicSharePath
+		publicUrl2 		= iif(ifnil(publishSettings.servername2, '') ~= '',
+								publishSettings.proto2 .. "://" .. publishSettings.servername2 .. publicSharePath,
+								'')
+	else
+		writeLogfile(3, string.format("PhotoStation.getSharedAlbumUrls('%s'): album is not shared publicly or reports no public share url\n", sharedAlbumName))
 	end
     writeLogfile(3, string.format("PhotoStation.getSharedAlbumUrls('%s') returns '%s', '%s', '%s'\n", sharedAlbumName, privateUrl, publicUrl, publicUrl2))
 	return privateUrl, publicUrl, publicUrl2
