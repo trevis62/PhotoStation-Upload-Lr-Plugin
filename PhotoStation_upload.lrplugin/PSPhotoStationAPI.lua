@@ -1920,7 +1920,7 @@ function PhotoStation.removePhotosFromSharedAlbum(h, sharedAlbumName, photos)
 
 	local photoIds = {}
 	for i = 1, #photos do
-		photoIds[i] = Photos.getPhotoId(h, photos[i].dstFilename, photos[i].isVideo, false)
+		photoIds[i] = PhotoStation.getPhotoId(h, photos[i].dstFilename, photos[i].isVideo)
 	end
 
     return PhotoStation_removePhotosFromSharedAlbum(h, albumId, photoIds)
