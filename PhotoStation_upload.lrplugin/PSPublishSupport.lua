@@ -670,13 +670,15 @@ function publishServiceProvider.imposeSortOrderOnPublishedCollection( publishSet
 									and publishedCollection:getCollectionInfoSummary().collectionSettings
 
 	-- do not sort if not supported or not configured or is Tree Mirror or Target Album is dynamic
-	if		not PHOTOSERVER_API.supports (publishSettings.psVersion, (PHOTOSERVER_ALBUM_SORT))
-		or	not publishSettings.sortPhotos
-	then
-		writeLogfile(3, "imposeSortOrderOnPublishedCollection: Sorting of photos not supported or not configured --> done.\n")
+	-- note: 'Sort Photos' is a Published Collection setting, it is not part of the Publish Service settings
+	if		not PHOTOSERVER_API.supports (publishSettings.psVersion, (PHOTOSERVER_ALBUM_SORT)) then
+		writeLogfile(3, "imposeSortOrderOnPublishedCollection: Sorting of photos not supported --> done.\n")
 		return false
 	elseif not collectionSettings then
 		writeLogfile(3, "imposeSortOrderOnPublishedCollection: Cannot get collectionSettings --> done.\n")
+		return false
+	elseif not collectionSettings.sortPhotos then
+		writeLogfile(3, "imposeSortOrderOnPublishedCollection: Sorting of photos not configured for this collection --> done.\n")
 		return false
 	elseif collectionSettings.copyTree then
 		writeLogfile(3, "imposeSortOrderOnPublishedCollection: Cannot sort photos in 'Tree Copy' collection --> done.\n")
@@ -696,7 +698,15 @@ function publishServiceProvider.imposeSortOrderOnPublishedCollection( publishSet
 		return false
 	end
 
-	publishSettings.photoServer:sortAlbumPhotos(albumPath, remoteIdSequence)
+	local sortSuccess, errorCode = publishSettings.photoServer:sortAlbumPhotos(albumPath, remoteIdSequence)
+	if not sortSuccess then
+		local errorMsg = string.format("Sort Photos in Album '%s' failed!\nReason: %s\n",
+										albumPath, publishSettings.photoServer.getErrorMsg(errorCode))
+		writeLogfile(1, errorMsg)
+		showFinalMessage("Photo StatLr: Sort Photos in Album failed!", errorMsg, "critical")
+		closeLogfile()
+		return false
+	end
 
 	showFinalMessage("Photo StatLr: Sort Photos in Album done", "Sort Photos in Album done.", "info")
 
